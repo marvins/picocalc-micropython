@@ -391,6 +391,15 @@ class TurtleScreen:
     def fill_rect( self, x, y, w, h, color ):
         display.fill_rect( x, y, w, h, color )
 
+    def draw_line( self, x1, y1, x2, y2, color ):
+        '''
+        Draw a line from P1 (x1,y1) to P2 (x2,y2)
+        '''
+        display.line( x1, y1, x2, y2, color )
+
+    def draw_rect( self, x, y, w, h, c ):
+        display.rect( x, y, w, h, c )
+
     def draw_text( self, text, x, y, color ):
         display.text( text, x, y, color )
         display.show()
@@ -414,6 +423,11 @@ def reset():
 
     a = init()
     a.reset()
+
+def fill( color ):
+
+    global g_screen
+    return g_screen.fill( color )
 
 def fill_rect( x, y, w, h, color ):
     global g_screen
