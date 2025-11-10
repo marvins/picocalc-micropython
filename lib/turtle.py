@@ -10,7 +10,7 @@ from picocalc.core import display, keyboard, terminal
 #--------------------------------#
 #-      Global Definitions      -#
 #--------------------------------#
-g_screen = None
+g_screen = display
 
 class Key:
     '''
@@ -295,7 +295,7 @@ class Keyboard:
 
     @staticmethod
     def is_letter( key ):
-        return Key.is_uppercase_letter( key ) or Key.is_lowercase_letter( key )
+        return Keyboard.is_uppercase_letter( key ) or Keyboard.is_lowercase_letter( key )
 
     @staticmethod
     def is_char( key ):
@@ -395,12 +395,22 @@ class TurtleScreen:
         '''
         Draw a line from P1 (x1,y1) to P2 (x2,y2)
         '''
+        if color is None:
+            color = 15
         display.line( x1, y1, x2, y2, color )
+        display.show()
 
-    def draw_rect( self, x, y, w, h, c ):
+    def draw_rect( self, x, y, w, h, c=None, line_color=None ):
+        if c is None and not (line_color is None):
+            c = line_color
+        if c is None:
+            c = 15
         display.rect( x, y, w, h, c )
+        display.show()
 
-    def draw_text( self, text, x, y, color ):
+    def draw_text( self, text, x, y, color=None ):
+        if color is None:
+            color = 15
         display.text( text, x, y, color )
         display.show()
 
@@ -425,17 +435,29 @@ def reset():
     a.reset()
 
 def fill( color ):
-
-    global g_screen
-    return g_screen.fill( color )
+    display.fill( color )
+    display.show()
 
 def fill_rect( x, y, w, h, color ):
-    global g_screen
-    return g_screen.fill_rect( x, y, w, h, color )
+    display.fill_rect( x, y, w, h, color )
+    display.show()
 
-def draw_text( text, x, y, color ):
-    global g_screen
-    return g_screen.draw_text( x, y, color )
+def draw_line( x1, y1, x2, y2, color=None ):
+    if color is None:
+        color = 15
+    display.line( x1, y1, x2, y2, color )
+    display.show()
+
+def draw_rect( x, y, w, h, line_color=None ):
+    c = 15 if line_color is None else line_color
+    display.rect( x, y, w, h, c )
+    display.show()
+
+def draw_text( text, x, y, color=None ):
+    if color is None:
+        color = 15
+    display.text( text, x, y, color )
+    display.show()
 
 def check_keyboard( verbose = False ):
 

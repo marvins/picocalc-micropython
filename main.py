@@ -10,5 +10,5 @@ def test_time_convert():
 import browser
 file_browser=browser.file_browser
 
-import converter_app
-converter=converter_app.main_menu
+import test_dashboard as td
+

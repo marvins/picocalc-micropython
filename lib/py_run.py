@@ -222,7 +222,7 @@ def file_management_menu():
 
 def main_menu():
 
-    #  Load all scripts within ./launch_scripts
+    #  Load all scripts within /sd
     scripts = find_py_files()
 
     print("\n=== PicoCalc Main Menu ===")
@@ -237,6 +237,7 @@ def main_menu():
         print("F: Flush & reload modules")
         print("S: System & Memory status")
         print("T: File management")
+        print("C: Run Calculator app")
 
         choice = input("\nEnter choice: ").strip().lower()
 
@@ -244,7 +245,8 @@ def main_menu():
             print("Exiting to prompt.")
             return
         elif choice == "r":
-            print( 'Reloading menu...' )
+            print('Reloading menu...')
+            scripts = find_py_files()
             continue
         elif choice == "f":
             flush_modules()
@@ -254,6 +256,15 @@ def main_menu():
             continue
         elif choice == "t":
             file_management_menu()
+            continue
+        elif choice == 'c':
+            try:
+                from calculator.main import main as calc_main
+                print("\nLaunching Calculator app...\n")
+                calc_main()
+            except Exception as e:
+                print(f"Calculator exited with error: {e}")
+            input("\nDone. Press Enter to return to menu...")
             continue
         else:
             try:

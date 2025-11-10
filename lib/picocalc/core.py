@@ -220,6 +220,14 @@ class PicoKeyboard:
     def battery(self):
         return self.read_reg16(_REG_BAT)
 
+    def battery_status( self ):
+        batt_info = int.from_bytes( self.battery() )
+
+        level    = batt_info & 0x7f
+        charging = batt_info & 0x80 != 0
+        return { 'level': level,
+                 'charging': charging }
+
     def readinto(self, buf):
 
         numkeysInhardware = self.keyCount()#how many keys in hardware
