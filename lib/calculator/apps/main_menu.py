@@ -1,4 +1,4 @@
- 
+
 from calculator.apps.app_base import App_Base
 from picocalc.colors import RGB_VT100, RGB_565
 import turtle
@@ -7,6 +7,7 @@ class Main_Menu( App_Base ):
 
     def __init__(self):
         super().__init__()
+        self.title = "Main Menu"
         self.selected = 0  # 0 = Calculator, 1 = Exit
         self.prev_selected = None
         self.items = [
@@ -20,10 +21,16 @@ class Main_Menu( App_Base ):
         self.background_drawn = False
 
     def render_body(self):
-        # First-time full redraw with light background
+        # First-time full redraw with light background (body area only)
         if not self.background_drawn:
             try:
-                turtle.fill(RGB_565.LIGHT_GRAY)
+                w, h = turtle.screensize()
+            except Exception:
+                w, h = (320, 320)
+            body_y = 24
+            body_h = h - body_y
+            try:
+                turtle.fill_rect(0, body_y, w, body_h, RGB_565.LIGHT_GRAY)
             except Exception:
                 try:
                     turtle.fill(0)
@@ -42,6 +49,7 @@ class Main_Menu( App_Base ):
             item = self.items[idx]
             x = self.icon_xs[idx]
             y = self.icon_y
+            
             # Use RGB_565 for primitives (rectangles/fills)
             border_color = RGB_565.BRIGHT_YELLOW if idx == self.selected else RGB_565.DARK_GRAY
             fill_color = RGB_565.BRIGHT_BLUE if idx == self.selected else RGB_565.BLACK
@@ -73,5 +81,8 @@ class Main_Menu( App_Base ):
                 if self.selected == 1:  # Exit
                     if self.runner:
                         self.runner.quit()
+                elif self.selected == 0:  # Calculator
+                    if self.runner:
+                        self.runner.switch_to(1)
                 # Placeholder for Calculator selection; no-op for now
 

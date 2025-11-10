@@ -32,7 +32,7 @@ class RGB_565:
     TRUE_CYAN = 0x07FF       # True cyan (RGB 0,255,255)
     TRUE_MAGENTA = 0xF81F    # True magenta (RGB 255,0,255)
 
-    
+
 
     @staticmethod
     def from_rgb( r, g, b ):

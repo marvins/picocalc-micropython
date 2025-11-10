@@ -1,11 +1,10 @@
 
-from picocalc.colors import ( RGB_565,
+from picocalc.colors import ( GS4,
                               RGB_VT100 )
 
 import turtle
 
-
-def draw_battery_icon(x, y, percentage, usb_power=False):
+def draw_battery_icon(x, y, percentage, usb_power=False, icon_color=None):
     """
     Draw a battery icon with percentage fill and terminal bump.
 
@@ -13,6 +12,7 @@ def draw_battery_icon(x, y, percentage, usb_power=False):
         x, y: Top-left corner of battery body
         percentage: 0-100 (None if USB powered)
         usb_power: True if on USB power
+        icon_color: GS4 color index to force for outline/fill (optional)
 
     Icon size: 24x12 pixels (body) + 2px terminal = 26x12 total
     """
@@ -23,25 +23,29 @@ def draw_battery_icon(x, y, percentage, usb_power=False):
     terminal_h = 6
 
     # Determine battery color based on charge level
-    if usb_power:
-        outline_color = RGB_VT100.BRIGHT_GREEN
-        fill_color = RGB_VT100.BRIGHT_GREEN
+    if icon_color is not None:
+        outline_color = icon_color
+        fill_color = icon_color
+        fill_percentage = 100 if usb_power or (percentage is not None and percentage > 0) else 0
+    elif usb_power:
+        outline_color = GS4.CYAN
+        fill_color = GS4.CYAN
         fill_percentage = 100
     elif percentage is None:
-        outline_color = RGB_VT100.WHITE
-        fill_color = RGB_VT100.WHITE
+        outline_color = GS4.LIGHT_GRAY
+        fill_color = GS4.LIGHT_GRAY
         fill_percentage = 0
     else:
         # Color coding: Green (>50%), Yellow (20-50%), Red (<20%)
         if percentage > 50:
-            outline_color = RGB_VT100.GREEN
-            fill_color    = RGB_VT100.GREEN
+            outline_color = GS4.GREEN
+            fill_color    = GS4.GREEN
         elif percentage > 20:
-            outline_color = RGB_VT100.YELLOW
-            fill_color    = RGB_VT100.YELLOW
+            outline_color = GS4.YELLOW
+            fill_color    = GS4.YELLOW
         else:
-            outline_color = RGB_VT100.RED
-            fill_color    = RGB_VT100.RED
+            outline_color = GS4.RED
+            fill_color    = GS4.RED
         fill_percentage = max( 0, min( 100, percentage ) )
 
     # Draw battery body outline
@@ -66,7 +70,7 @@ def draw_battery_icon(x, y, percentage, usb_power=False):
                                body_h - 4,
                                fill_color)
 
-def draw_battery_status(x, y, battery_status):
+def draw_battery_status(x, y, battery_status, icon_color=None, text_color=None):
     """
     Draw battery icon with percentage text.
 
@@ -81,19 +85,22 @@ def draw_battery_status(x, y, battery_status):
     usb_power = battery_status.get("usb_power", False)
 
     # Draw icon
-    draw_battery_icon(x, y, percentage, usb_power)
+    draw_battery_icon(x, y, percentage, usb_power, icon_color=icon_color)
 
     # Draw percentage text
-    if usb_power:
+    if text_color is not None:
+        text = "USB" if usb_power else (f"{int(percentage)}%" if percentage is not None else "--")
+        color = text_color
+    elif usb_power:
         text = "USB"
         color = RGB_VT100.BRIGHT_GREEN
     elif percentage is not None:
         text = f"{int(percentage)}%"
         # Match icon color
         if percentage > 50:
-            color = RGB_VT100.GREEN
+            color = RGB_VT100.BRIGHT_GREEN
         elif percentage > 20:
-            color = RGB_VT100.YELLOW
+            color = RGB_VT100.BROWN
         else:
             color = RGB_VT100.RED
     else:
@@ -103,4 +110,4 @@ def draw_battery_status(x, y, battery_status):
     # Position text to the right of icon (icon is ~26px wide)
     text_x = x + 30
     text_y = y + 2  # Vertically center with icon
-    draw_text(text, text_x, text_y, color)
+    turtle.draw_text(text, text_x, text_y, color)
