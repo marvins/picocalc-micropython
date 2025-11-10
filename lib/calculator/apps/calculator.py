@@ -86,34 +86,12 @@ class Calculator(App_Base):
                 turtle.draw_text(f"F{self.modal_id} Panel", mx + 8, my + 8, RGB_VT100.WHITE)
             except Exception:
                 pass
-
-        # Draw centered text box over the body area with 3px inset and 2px black border
-        try:
-            w, h = turtle.screensize()
-        except Exception:
-            w, h = (320, 320)
-        header_h = 24
-        footer_h = 24
-        body_x = 0
-        body_y = header_h
-        body_w = w
-        body_h = h - header_h  # footer is drawn on top; we still reserve visual space
-
-        inset = 3
-        box_x = body_x + inset
-        box_y = body_y + inset
-        box_w = body_w - 2 * inset
-        box_h = body_h - 2 * inset - footer_h  # keep space for footer
-
-        if box_w > 6 and box_h > 6:
-            # Border 2px: draw two rectangles
+            # keep the modal persistent by re-invalidating
             try:
-                turtle.draw_rect(box_x, box_y, box_w, box_h, line_color=RGB_565.BLACK)
-                turtle.draw_rect(box_x + 1, box_y + 1, box_w - 2, box_h - 2, line_color=RGB_565.BLACK)
-                # Fill interior white
-                turtle.fill_rect(box_x + 2, box_y + 2, box_w - 4, box_h - 4, RGB_565.WHITE)
+                self.invalidate()
             except Exception:
                 pass
+
 
     def render_footer(self):
         try:

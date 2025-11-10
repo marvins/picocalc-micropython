@@ -7,6 +7,7 @@ try:
     from picocalc.core import keyboard as _pc_keyboard
 except Exception:
     _pc_keyboard = None
+import time
 
 # Layout constants
 HEADER_H = 24
@@ -19,6 +20,9 @@ class App_Base:
         self.runner = None
         self.dirty = False
         self.title = "Window"
+        # battery cache
+        self._batt_cache = None
+        self._batt_ts = 0
 
 
     def render( self ):
@@ -50,22 +54,22 @@ class App_Base:
 
         # Battery (right)
         try:
-            # Prefer hardware-level reading from picocalc.core (level 0-127; charging flag)
-            battery_status = None
-            if _pc_keyboard is not None:
-                hw = _pc_keyboard.battery_status()
-                level = hw.get('level', 0)
-                charging = hw.get('charging', False)
-                # Map 0..127 to 0..100
-                percentage = int((min(max(level, 0), 127) * 100) / 127)
-                battery_status = { 'percentage': percentage,
-                                   'usb_power': charging }
-            else:
-                # Fallback to voltage-based module if available
-                battery_status = _battery.get_status()
+            # Cached read (1s cache) to avoid I2C latency on every render
+            now = time.ticks_ms()
+            if (self._batt_cache is None) or (time.ticks_diff(now, self._batt_ts) > 1000):
+                if _pc_keyboard is not None:
+                    hw = _pc_keyboard.battery_status()
+                    level = hw.get('level', 0)
+                    charging = hw.get('charging', False)
+                    percentage = int((min(max(level, 0), 127) * 100) / 127)
+                    self._batt_cache = { 'percentage': percentage,
+                                         'usb_power': charging }
+                else:
+                    self._batt_cache = _battery.get_status()
+                self._batt_ts = now
 
             # place about ~90px from right edge
-            draw_battery_status(w - 90, 6, battery_status,
+            draw_battery_status(w - 90, 6, self._batt_cache,
                                 icon_color=GS4.CYAN,
                                 text_color=RGB_VT100.BRIGHT_GREEN)
         except Exception:
